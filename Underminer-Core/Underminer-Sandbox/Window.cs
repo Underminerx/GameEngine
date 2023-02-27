@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Underminer_Core.Rendering;
 
 namespace Underminer_Sandbox
 {
@@ -29,11 +31,12 @@ namespace Underminer_Sandbox
         };
 
 
-        private int _vao;       // 顶点序列id vertex  array  object
-        private int _vbo;       // 顶点缓冲id vertex  buffer object
-        private int _ebo;       // 元素缓冲id element buffer object / ibo 索引缓冲id Index buffer object
+        private VertexArrayObject _vao;
+        private VertexBufferObject _vbo;
+        private IndexBufferObject _ibo;
         private int _program;   // 渲染管线id
 
+        // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
         { Size = (width, height), Title = title })
         {
@@ -46,22 +49,16 @@ namespace Underminer_Sandbox
             // 绘制线框
             // GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             
-            // 绑定vao 为了指定layout
-            _vao = GL.GenVertexArray();
-            GL.BindVertexArray(_vao);
+            _vbo = new VertexBufferObject(_vertices);
+            VertexBufferLayout layout = new VertexBufferLayout();
+            layout.AddElement(new VertexBufferLayoutElement(0, 3), new VertexBufferLayoutElement(1, 3));
+            _vbo.AddLayout(layout);
+            _ibo = new IndexBufferObject(_indices);         // _ibo在VertexArrayObject中绑定
+            _vao = new VertexArrayObject(_ibo, _vbo);
 
-            // 获取vbo
-            _vbo = GL.GenBuffer();
-            // 绑定vbo
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            // 缓冲区类型 缓冲区大小 要传的数据 传入类型 (static不动 Dynamic少动 Stream多动)
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-            // location位置0 指向aPos aPos内容格式
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            // location位置1 指向aColor
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            _vao.Bind();
+
+
 
             #region shader创建与绑定pipline
 
@@ -114,23 +111,28 @@ namespace Underminer_Sandbox
             #endregion
 
 
-            // 创建索引缓冲对象
-            _ebo = GL.GenBuffer();
-            // 顶点位置数据
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
-
         }
 
         // 每帧渲染运行 Update
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(Color.AntiqueWhite);
-            GL.BindVertexArray(_vao);       // 绑定vao
+            GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
+            _vao.Bind();
             GL.UseProgram(_program);        // 使用shader
-            // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+
+            // 未使用索引
+            if (_vao.IndexBufferObject == null)
+            {
+                // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            }
+            // 使用索引
+            else
+            {
+                GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
+            }
+
+
 
 
             SwapBuffers();
