@@ -81,4 +81,5 @@ v15/
 
 #custom
 *.vsidx
+*.v2
 read.lock

@@ -17,13 +17,21 @@ namespace Underminer_Sandbox
 
         float[] _vertices =
         {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.0f,  0.5f, 0.0f
+             0.5f,  0.5f, 0.0f,     // 右上角
+             0.5f, -0.5f, 0.0f,     // 右下角
+            -0.5f, -0.5f, 0.0f,     // 左下角
+            -0.5f,  0.5f, 0.0f      // 左上角
         };
 
-        private int _vao;       // 顶点序列id
-        private int _vbo;       // 顶点缓冲id
+        uint[] _indices = {
+            0, 1, 3, // 第一个三角形
+            1, 2, 3  // 第二个三角形
+        };
+
+
+        private int _vao;       // 顶点序列id vertex  array  object
+        private int _vbo;       // 顶点缓冲id vertex  buffer object
+        private int _ebo;       // 元素缓冲id element buffer object / ibo 索引缓冲id Index buffer object
         private int _program;   // 渲染管线id
 
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -35,6 +43,9 @@ namespace Underminer_Sandbox
         // 窗口创建完成 第一次运行
         protected override void OnLoad()
         {
+            // 绘制线框
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            
             // 绑定vao 为了指定layout
             _vao = GL.GenVertexArray();
             GL.BindVertexArray(_vao);
@@ -57,6 +68,7 @@ namespace Underminer_Sandbox
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
+            #region shader创建与绑定pipline
 
             int vertexShader = GL.CreateShader(ShaderType.VertexShader);
             // 将shader内容与类型绑定
@@ -88,6 +100,14 @@ namespace Underminer_Sandbox
             // 可以直接使用管线
             // GL.UseProgram( _program );
 
+            #endregion
+
+
+            // 创建索引缓冲对象
+            _ebo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+
 
         }
 
@@ -98,7 +118,9 @@ namespace Underminer_Sandbox
             GL.ClearColor(Color.AntiqueWhite);
             GL.BindVertexArray(_vao);       // 绑定vao
             GL.UseProgram(_program);        // 使用shader
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+
 
             SwapBuffers();
         }
