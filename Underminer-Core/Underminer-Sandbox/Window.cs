@@ -11,6 +11,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Underminer_Core.Rendering;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Underminer_Sandbox
 {
@@ -30,11 +31,10 @@ namespace Underminer_Sandbox
             1, 2, 3  // 第二个三角形
         };
 
-
         private VertexArrayObject _vao;
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
-        private int _program;   // 渲染管线id
+        private Shader _shader;
 
         // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -58,58 +58,7 @@ namespace Underminer_Sandbox
 
             _vao.Bind();
 
-
-
-            #region shader创建与绑定pipline
-
-            // 顶点shader代码 (@转义)
-            string vertexSource = @"
-                #version 460 core
-                layout (location = 0) in vec3 aPos;
-                layout (location = 1) in vec3 aColor;
-
-                layout (location = 0) out vec3 color;
-
-                void main()
-                {
-                    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-                    color = aColor;
-                }";
-
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            // 将shader内容与类型绑定
-            GL.ShaderSource(vertexShader, vertexSource);
-            // 编译shader
-            GL.CompileShader(vertexShader);
-
-            // 片段shader代码 
-            string fragmentSource = @"
-                #version 460 core
-                out vec4 FragColor;
-                layout (location = 0) in vec3 color;
-
-                void main()
-                {
-                    FragColor = vec4(color, 1.0f);
-                } ";
-
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            // 将shader内容与类型绑定
-            GL.ShaderSource(fragmentShader, fragmentSource);
-            // 编译shader
-            GL.CompileShader(fragmentShader);
-
-            // 创建渲染管线
-            _program = GL.CreateProgram();
-            // 把shader与管线绑定
-            GL.AttachShader(_program, vertexShader);
-            GL.AttachShader(_program, fragmentShader);
-            GL.LinkProgram(_program);
-            // 可以直接使用管线
-            // GL.UseProgram( _program );
-
-            #endregion
-
+            _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
 
         }
 
@@ -118,8 +67,9 @@ namespace Underminer_Sandbox
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
+
             _vao.Bind();
-            GL.UseProgram(_program);        // 使用shader
+            _shader.Bind();
 
             // 未使用索引
             if (_vao.IndexBufferObject == null)
@@ -131,9 +81,6 @@ namespace Underminer_Sandbox
             {
                 GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
             }
-
-
-
 
             SwapBuffers();
         }
