@@ -1,10 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using OpenTK.Mathematics;
 
 namespace Underminer_Core.Rendering
 {
@@ -14,9 +9,12 @@ namespace Underminer_Core.Rendering
 
         public string Path { get; }
 
+        private Dictionary<string, int> _cache = new Dictionary<string, int>();
+
         public Shader(string path)
         {
             Path = path;
+
             (string vertexSource, string fragmentSource) = LoadShaderFromDisk(path);
             CreatProgram(vertexSource, fragmentSource);
         }
@@ -56,6 +54,26 @@ namespace Underminer_Core.Rendering
             GL.UseProgram(0);
         }
 
+        public void SetUniform(string name, float v) => GL.Uniform1(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector2 v) => GL.Uniform2(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector3 v) => GL.Uniform3(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector4 v) => GL.Uniform4(GetUniformLocation(name), v);
+        //public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), true, ref v);
+        //public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), true, ref v);
+        //public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), true, ref v);     // OpenGL 主列 OpenTK 主行
+
+
+        private int GetUniformLocation(string name)
+        {
+            if (_cache.ContainsKey(name)) return _cache[name];      // 存在则直接返回
+            int location = GL.GetUniformLocation(Id, name);
+            _cache.Add(name, location);
+            return location;
+        }
+
         private static (string vertexShaderSource, string fragmentShaderSource) LoadShaderFromDisk(string path)
         {
             string[] lines = File.ReadAllLines(path);       // 读取每一行 存入数组
@@ -78,7 +96,7 @@ namespace Underminer_Core.Rendering
             if (succeed == 0)
             {
                 GL.GetShaderInfoLog(id, out string info);
-                Console.WriteLine(info);
+                Console.WriteLine($"error:{type.ToString()} \n {info}");
             }
 
             return id;

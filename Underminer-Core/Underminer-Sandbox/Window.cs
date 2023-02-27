@@ -20,10 +20,10 @@ namespace Underminer_Sandbox
 
         float[] _vertices =
         {
-             0.5f,  0.5f, 0.0f, 1, 0, 0,    // 右上角
-             0.5f, -0.5f, 0.0f, 0, 1, 0,    // 右下角
-            -0.5f, -0.5f, 0.0f, 0, 0, 1,    // 左下角
-            -0.5f,  0.5f, 0.0f, 1, 0, 1     // 左上角
+             0.5f,  0.5f, 0.0f,    // 右上角
+             0.5f, -0.5f, 0.0f,    // 右下角
+            -0.5f, -0.5f, 0.0f,    // 左下角
+            -0.5f,  0.5f, 0.0f    // 左上角
         };
 
         uint[] _indices = {
@@ -51,7 +51,7 @@ namespace Underminer_Sandbox
             
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3), new VertexBufferLayoutElement(1, 3));
+            layout.AddElement(new VertexBufferLayoutElement(0, 3));
             _vbo.AddLayout(layout);
             _ibo = new IndexBufferObject(_indices);         // _ibo在VertexArrayObject中绑定
             _vao = new VertexArrayObject(_ibo, _vbo);
@@ -62,25 +62,25 @@ namespace Underminer_Sandbox
 
         }
 
+        private double _totleTime = 0;      // 运行总时间
         // 每帧渲染运行 Update
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
 
+
             _vao.Bind();
             _shader.Bind();
+            Vector3 color = new Vector3(MathF.Sin((float)_totleTime), MathF.Cos((float)_totleTime), MathF.Acos((float)_totleTime));
+            _shader.SetUniform("color", color);
 
-            // 未使用索引
-            if (_vao.IndexBufferObject == null)
-            {
-                // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            }
-            // 使用索引
-            else
-            {
-                GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
-            }
+            //if (_vao.IndexBufferObject == null) 
+            //    // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            //else
+            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
+
+            _totleTime += args.Time;        // args.Time每帧运行的时间
 
             SwapBuffers();
         }
