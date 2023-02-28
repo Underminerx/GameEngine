@@ -1,12 +1,14 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Vector2 = OpenTK.Mathematics.Vector2;
+using Vector3 = OpenTK.Mathematics.Vector3;
+using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace Underminer_Core.Rendering
 {
     public class Shader : IDisposable
     {
         public int Id { get; private set; }
-
         public string Path { get; }
 
         private Dictionary<string, int> _cache = new Dictionary<string, int>();

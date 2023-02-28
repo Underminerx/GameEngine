@@ -10,6 +10,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using StbImageSharp;
 using Underminer_Core.Rendering;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -20,10 +21,11 @@ namespace Underminer_Sandbox
 
         float[] _vertices =
         {
-             0.5f,  0.5f, 0.0f,    // 右上角
-             0.5f, -0.5f, 0.0f,    // 右下角
-            -0.5f, -0.5f, 0.0f,    // 左下角
-            -0.5f,  0.5f, 0.0f    // 左上角
+        //     ---- 位置 ----       ---- 颜色 ----      - 纹理坐标 -
+             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
         };
 
         uint[] _indices = {
@@ -51,14 +53,33 @@ namespace Underminer_Sandbox
             
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3));
+            layout.AddElement(new VertexBufferLayoutElement(0, 3),
+                              new VertexBufferLayoutElement(1, 3), 
+                              new VertexBufferLayoutElement(2, 2));
             _vbo.AddLayout(layout);
             _ibo = new IndexBufferObject(_indices);         // _ibo在VertexArrayObject中绑定
             _vao = new VertexArrayObject(_ibo, _vbo);
-
             _vao.Bind();
-
             _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
+
+            int textureId = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, textureId);
+            int warpS = (int)TextureWrapMode.Repeat;
+            int warpT = (int)TextureWrapMode.Repeat;
+            int magFliter = (int)TextureMagFilter.Linear;       // 放大用线性过滤
+            int minFilter = (int)TextureMagFilter.Nearest;      // 缩小用临近过滤
+            GL.TextureParameterI(textureId, TextureParameterName.TextureWrapS, ref warpS);          // 配置横坐标
+            GL.TextureParameterI(textureId, TextureParameterName.TextureWrapT, ref warpT);          // 配置纵坐标
+            GL.TextureParameterI(textureId, TextureParameterName.TextureMagFilter, ref magFliter);      // 放大过滤
+            GL.TextureParameterI(textureId, TextureParameterName.TextureMinFilter, ref minFilter);      // 缩小过滤
+
+            // 对图片进行上下反转  加载时从左上角加载 stb纹理映射时从左下角映射
+            StbImage.stbi_set_flip_vertically_on_load(1);
+
+            ImageResult image = ImageResult.FromStream(File.OpenRead("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture.png"""), ColorComponents.RedGreenBlueAlpha);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
+
 
         }
 
