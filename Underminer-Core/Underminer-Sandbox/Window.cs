@@ -37,6 +37,7 @@ namespace Underminer_Sandbox
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
         private Shader _shader;
+        private Texture2D _texture01;
 
         // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -61,25 +62,7 @@ namespace Underminer_Sandbox
             _vao = new VertexArrayObject(_ibo, _vbo);
             _vao.Bind();
             _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
-
-            int textureId = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, textureId);
-            int warpS = (int)TextureWrapMode.Repeat;
-            int warpT = (int)TextureWrapMode.Repeat;
-            int magFliter = (int)TextureMagFilter.Linear;       // 放大用线性过滤
-            int minFilter = (int)TextureMagFilter.Nearest;      // 缩小用临近过滤
-            GL.TextureParameterI(textureId, TextureParameterName.TextureWrapS, ref warpS);          // 配置横坐标
-            GL.TextureParameterI(textureId, TextureParameterName.TextureWrapT, ref warpT);          // 配置纵坐标
-            GL.TextureParameterI(textureId, TextureParameterName.TextureMagFilter, ref magFliter);      // 放大过滤
-            GL.TextureParameterI(textureId, TextureParameterName.TextureMinFilter, ref minFilter);      // 缩小过滤
-
-            // 对图片进行上下反转  加载时从左上角加载 stb纹理映射时从左下角映射
-            StbImage.stbi_set_flip_vertically_on_load(1);
-
-            ImageResult image = ImageResult.FromStream(File.OpenRead("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture.png"""), ColorComponents.RedGreenBlueAlpha);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
-
+            _texture01 = new Texture2D(@"D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture.png");
 
         }
 
@@ -95,14 +78,12 @@ namespace Underminer_Sandbox
             _shader.Bind();
             Vector3 color = new Vector3(MathF.Sin((float)_totleTime), MathF.Cos((float)_totleTime), MathF.Acos((float)_totleTime));
             _shader.SetUniform("color", color);
+            _shader.SetUniform("mainTex", 0);
+            _texture01.Bind();
 
-            //if (_vao.IndexBufferObject == null) 
-            //    // GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            //else
-            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);     //draw call   与GPU通信
 
             _totleTime += args.Time;        // args.Time每帧运行的时间
-
             SwapBuffers();
         }
 
