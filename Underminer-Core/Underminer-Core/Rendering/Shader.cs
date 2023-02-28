@@ -56,6 +56,7 @@ namespace Underminer_Core.Rendering
             GL.UseProgram(0);
         }
 
+        public void SetUniform(string name, int v) => GL.Uniform1(GetUniformLocation(name), v);
         public void SetUniform(string name, float v) => GL.Uniform1(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector2 v) => GL.Uniform2(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector3 v) => GL.Uniform3(GetUniformLocation(name), v);

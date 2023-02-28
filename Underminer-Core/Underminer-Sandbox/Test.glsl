@@ -28,8 +28,9 @@ layout (location = 1) in vec2 texCoords;
 out vec4 FragColor;
 
 uniform sampler2D mainTex;
+uniform sampler2D subTex;
 
 void main()
 {
-    FragColor = texture(mainTex, texCoords);
+    FragColor = mix(texture(mainTex, texCoords), texture(subTex, texCoords), 0.5);
 }

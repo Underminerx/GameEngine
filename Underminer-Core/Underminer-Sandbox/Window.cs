@@ -38,6 +38,7 @@ namespace Underminer_Sandbox
         private IndexBufferObject _ibo;
         private Shader _shader;
         private Texture2D _texture01;
+        private Texture2D _texture02;
 
         // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -62,8 +63,9 @@ namespace Underminer_Sandbox
             _vao = new VertexArrayObject(_ibo, _vbo);
             _vao.Bind();
             _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
-            _texture01 = new Texture2D(@"D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture.png");
-
+            _texture01 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture01.png""");
+            //_texture02 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture02.png""");
+            _texture02 = new Texture2D(Color4.Red);
         }
 
         private double _totleTime = 0;      // 运行总时间
@@ -78,8 +80,12 @@ namespace Underminer_Sandbox
             _shader.Bind();
             Vector3 color = new Vector3(MathF.Sin((float)_totleTime), MathF.Cos((float)_totleTime), MathF.Acos((float)_totleTime));
             _shader.SetUniform("color", color);
+
             _shader.SetUniform("mainTex", 0);
-            _texture01.Bind();
+            _texture01.Bind(0);
+
+            _shader.SetUniform("subTex", 1);
+            _texture02.Bind(1);
 
             GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);     //draw call   与GPU通信
 
