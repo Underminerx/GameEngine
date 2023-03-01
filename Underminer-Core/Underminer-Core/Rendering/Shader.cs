@@ -61,12 +61,12 @@ namespace Underminer_Core.Rendering
         public void SetUniform(string name, Vector2 v) => GL.Uniform2(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector3 v) => GL.Uniform3(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector4 v) => GL.Uniform4(GetUniformLocation(name), v);
-        //public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), true, ref v);
-        //public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), true, ref v);
-        //public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), true, ref v);     // OpenGL 主列 OpenTK 主行
+        //public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), false, ref v);
+        //public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), false, ref v);
+        //public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), false, ref v);     // OpenGL主列 MVP左乘 OpenTK主行 MVP右乘
 
 
         private int GetUniformLocation(string name)

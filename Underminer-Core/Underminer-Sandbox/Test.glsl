@@ -12,7 +12,7 @@ uniform mat4 perspective;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0) * model * view * perspective;
+    gl_Position = perspective * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
     texCoords = aTexCoords;
 }
 
