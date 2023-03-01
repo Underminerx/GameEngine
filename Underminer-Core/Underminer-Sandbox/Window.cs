@@ -13,6 +13,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
 using Underminer_Core.Rendering;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Net.WebRequestMethods;
 
 namespace Underminer_Sandbox
 {
@@ -21,11 +22,48 @@ namespace Underminer_Sandbox
 
         float[] _vertices =
         {
-        //     ---- 位置 ----       ---- 颜色 ----      - 纹理坐标 -
-             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
-             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
+        // ---- 位置----       - 纹理坐标 -    /*---- 颜色 ----*/
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f   /*1.0f, 1.0f, 0.0f*/
         };
 
         uint[] _indices = {
@@ -33,12 +71,14 @@ namespace Underminer_Sandbox
             1, 2, 3  // 第二个三角形
         };
 
+        private float width;
+        private float height;
+
         private VertexArrayObject _vao;
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
         private Shader _shader;
         private Texture2D _texture01;
-        private Texture2D _texture02;
 
         // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -56,38 +96,44 @@ namespace Underminer_Sandbox
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
             layout.AddElement(new VertexBufferLayoutElement(0, 3),
-                              new VertexBufferLayoutElement(1, 3), 
-                              new VertexBufferLayoutElement(2, 2));
+                              new VertexBufferLayoutElement(1, 2));
+
             _vbo.AddLayout(layout);
             _ibo = new IndexBufferObject(_indices);         // _ibo在VertexArrayObject中绑定
-            _vao = new VertexArrayObject(_ibo, _vbo);
-            _vao.Bind();
+
+            _vao = new VertexArrayObject(null, _vbo);
             _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
             _texture01 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture01.png""");
-            //_texture02 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture02.png""");
-            _texture02 = new Texture2D(Color4.Red);
         }
 
         private double _totleTime = 0;      // 运行总时间
+        private Matrix4 _model;
+        private Matrix4 _view;
+        private Matrix4 _perspective;
         // 每帧渲染运行 Update
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
-
 
             _vao.Bind();
             _shader.Bind();
-            Vector3 color = new Vector3(MathF.Sin((float)_totleTime), MathF.Cos((float)_totleTime), MathF.Acos((float)_totleTime));
-            _shader.SetUniform("color", color);
+
+            _model = Matrix4.Identity * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30));
+            _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
+            _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), width / height, 0.1f, 1000);
 
             _shader.SetUniform("mainTex", 0);
             _texture01.Bind(0);
 
-            _shader.SetUniform("subTex", 1);
-            _texture02.Bind(1);
+            // 设置MVP矩阵
+            _shader.SetUniform("model", _model);
+            _shader.SetUniform("view", _view);
+            _shader.SetUniform("perspective", _perspective);
 
-            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);     //draw call   与GPU通信
+            GL.Enable(EnableCap.DepthTest);
+            // GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);     //draw call   与GPU通信
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             _totleTime += args.Time;        // args.Time每帧运行的时间
             SwapBuffers();
@@ -110,6 +156,8 @@ namespace Underminer_Sandbox
         protected override void OnResize(ResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
+            width = e.Width;
+            height = e.Height;
         }
     }
 
