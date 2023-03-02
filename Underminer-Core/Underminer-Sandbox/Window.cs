@@ -113,13 +113,13 @@ namespace Underminer_Sandbox
         // 每帧渲染运行 Update
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
 
             _vao.Bind();
             _shader.Bind();
-
-            _model = Matrix4.Identity * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30));
+            // 先缩放 后旋转 再平移 
+            _model = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30));
             _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), width / height, 0.1f, 1000);
 
