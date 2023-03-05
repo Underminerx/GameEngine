@@ -12,17 +12,20 @@ namespace Underminer_Core.Rendering.Geometry
         public int IndexCount { get; }
         public int MaterialIndex { get; }
 
+        public string MeshName { get; }
+
         // 渲染物体需要vbo vao
         private IndexBufferObject? _indexBufferObject;          // 若顶点数据少于3 无需创建ibo
         private VertexBufferObject _vertexBufferObject;
         private VertexArrayObject _vertexArrayObject;
 
         // 顶点信息 顶点索引 材质索引
-        public Mesh(List<Vertex> vertices, List<uint> indices, int materialIndex) 
+        public Mesh(List<Vertex> vertices, List<uint> indices, int materialIndex, string meshName) 
         {
             VertexCount = vertices.Count;
             IndexCount = indices.Count;
             MaterialIndex = materialIndex;
+            MeshName = meshName;
 
             CreatBuffer(vertices, indices);
         }

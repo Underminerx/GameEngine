@@ -12,6 +12,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
 using Underminer_Core.Rendering;
+using Underminer_Core.Rendering.Geometry;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -19,91 +20,23 @@ namespace Underminer_Sandbox
 {
     internal class Window : GameWindow
     {
-
-        float[] _vertices =
-        {
-        // ---- 位置----       - 纹理坐标 -    /*---- 颜色 ----*/
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  /*1.0f, 1.0f, 0.0f,*/
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  /*1.0f, 0.0f, 0.0f,*/
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  /*0.0f, 1.0f, 0.0f,*/
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  /*0.0f, 0.0f, 1.0f,*/
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f   /*1.0f, 1.0f, 0.0f*/
-        };
-
-        uint[] _indices = {
-            0, 1, 3, // 第一个三角形
-            1, 2, 3  // 第二个三角形
-        };
-
         private float width;
         private float height;
 
-        private VertexArrayObject _vao;
-        private VertexBufferObject _vbo;
-        private IndexBufferObject _ibo;
         private Shader _shader;
         private Texture2D _texture01;
+        private Model _myModel;
 
         // 创建窗口
         public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
-        { Size = (width, height), Title = title })
-        {
-
-        }
+        { Size = (width, height), Title = title }) { }
 
         // 窗口创建完成 第一次运行
         protected override void OnLoad()
         {
-            // 绘制线框
-            // GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            
-            _vbo = new VertexBufferObject(_vertices);
-            VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3),
-                              new VertexBufferLayoutElement(1, 2));
-
-            _vbo.AddLayout(layout);
-            _ibo = new IndexBufferObject(_indices);         // _ibo在VertexArrayObject中绑定
-
-            _vao = new VertexArrayObject(null, _vbo);
+            _myModel = new Model(@"D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\queen.fbx");
             _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
-            _texture01 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\texture01.png""");
+            _texture01 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\BingTang_Queen_Clothes.png""");
         }
 
         private double _totleTime = 0;      // 运行总时间
@@ -116,11 +49,10 @@ namespace Underminer_Sandbox
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             GL.ClearColor(new Color4(0.1f, 0.1f, 0.1f, 1.0f));
 
-            _vao.Bind();
             _shader.Bind();
             // 先缩放 后旋转 再平移 
-            _model = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30));
-            _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
+            _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totleTime*10)));
+            _view = Matrix4.LookAt(new Vector3(0, 3, -3), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), width / height, 0.1f, 1000);
 
             _shader.SetUniform("mainTex", 0);
@@ -131,9 +63,20 @@ namespace Underminer_Sandbox
             _shader.SetUniform("view", _view);
             _shader.SetUniform("perspective", _perspective);
 
-            GL.Enable(EnableCap.DepthTest);
-            // GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);     //draw call   与GPU通信
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            // 开始渲染
+            foreach (var mesh in _myModel.Meshes)
+            {
+                mesh.Bind();
+                GL.Enable(EnableCap.DepthTest);
+                if (mesh.IndexCount > 3)
+                {
+                    GL.DrawElements(PrimitiveType.Triangles, mesh.IndexCount, DrawElementsType.UnsignedInt, 0);
+                }
+                else
+                {
+                    GL.DrawArrays(PrimitiveType.Triangles, 0, mesh.VertexCount);
+                }
+            }
 
             _totleTime += args.Time;        // args.Time每帧运行的时间
             SwapBuffers();
