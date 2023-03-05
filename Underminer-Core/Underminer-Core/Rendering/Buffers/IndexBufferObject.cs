@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Underminer_Core.Rendering
+namespace Underminer_Core.Rendering.Buffers
 {
     // Buffer是非托管内存 类消亡时系统不会自动释放内存 因此 需要继承IDisposable接口
     public class IndexBufferObject : IDisposable

@@ -20,16 +20,14 @@ void main()
 
 
 #shader fragment
-
 #version 410 core
-
 layout (location = 0) in vec2 texCoords;
-
+uniform vec4 color = vec4(1, 0, 0, 1);
 out vec4 FragColor;
 
 uniform sampler2D mainTex;
 
 void main()
 {
-    FragColor = texture(mainTex, texCoords);
+    FragColor = texture(mainTex, texCoords) * color;
 }

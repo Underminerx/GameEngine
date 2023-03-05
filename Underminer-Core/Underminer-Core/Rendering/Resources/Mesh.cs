@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Underminer_Core.Rendering.Buffers;
+using Underminer_Core.Rendering.Geometry;
 
-namespace Underminer_Core.Rendering.Geometry
+namespace Underminer_Core.Rendering.Resources
 {
     public class Mesh : IDisposable
     {

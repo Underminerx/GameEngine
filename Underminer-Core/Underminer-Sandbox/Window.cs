@@ -12,7 +12,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
 using Underminer_Core.Rendering;
-using Underminer_Core.Rendering.Geometry;
+using Underminer_Core.Rendering.Resources;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -34,9 +34,9 @@ namespace Underminer_Sandbox
         // 窗口创建完成 第一次运行
         protected override void OnLoad()
         {
-            _myModel = new Model(@"D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\queen.fbx");
-            _shader = new Shader("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
-            _texture01 = new Texture2D("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\BingTang_Queen_Clothes.png""");
+            _myModel = Model.Create(@"D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\queen.fbx");
+            _shader = Shader.Create("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Test.glsl""");
+            _texture01 = Texture2D.Create("""D:\GameEngine\Underminer-Core\Underminer-Sandbox\Model_2\BingTang_Queen_Clothes.png""");
         }
 
         private double _totleTime = 0;      // 运行总时间
@@ -52,7 +52,7 @@ namespace Underminer_Sandbox
             _shader.Bind();
             // 先缩放 后旋转 再平移 
             _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totleTime*10)));
-            _view = Matrix4.LookAt(new Vector3(0, 3, -3), Vector3.Zero, Vector3.UnitY);
+            _view = Matrix4.LookAt(new Vector3(0, 0, -5), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), width / height, 0.1f, 1000);
 
             _shader.SetUniform("mainTex", 0);

@@ -4,20 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Underminer_Core.Rendering.Geometry;
 
-namespace Underminer_Core.Rendering.Geometry
+namespace Underminer_Core.Rendering.Resources
 {
     public class Model : IDisposable
     {
-        public string Path { get; }
-        public List<Mesh> Meshes { get; }
-        public List<string> MaterialNames { get; }
-        public Model(string path)
-        {
-            Path = path;
-            (Meshes, MaterialNames) = LoadModel(path);
-        }
-        
+        public string Path { get; }                     // 模型文件路径
+        public List<Mesh> Meshes { get; }               // 模型网格列表
+        public List<string> MaterialNames { get; }      // 模型材质列表
+        public bool IsDestroy { get; private set; } = false;
+
+        public static Model Create(string path) => new Model(path);
         public static (List<Mesh> meshes, List<string> materialNames) LoadModel(string path, PostProcessSteps postProcessSteps = PostProcessSteps.None)
         {
             AssimpContext assimp = new AssimpContext();
@@ -34,8 +32,12 @@ namespace Underminer_Core.Rendering.Geometry
             ProcessNode(scene, meshes, scene.RootNode, Assimp.Matrix4x4.Identity);
             return (meshes, materialNames);
         }
-
-
+        
+        private Model(string path)
+        {
+            Path = path;
+            (Meshes, MaterialNames) = LoadModel(path);
+        }
         private static List<string> ProcessMaterials(Scene scene)
         {
             List<string> materialNames = new List<string>();
@@ -52,19 +54,21 @@ namespace Underminer_Core.Rendering.Geometry
         // 处理的结果直接存入meshes
         private static void ProcessNode(Scene scene, List<Mesh> meshes, Node rootNode, Assimp.Matrix4x4 transform)
         {
+            var nodeTransform = rootNode.Transform * transform;     // 父节点变换右乘(transform行主式)当前结点变换 得到当前结点的世界变换
             // 先处理自身mesh 转换为自定义mesh
             foreach (var index in rootNode.MeshIndices)
             {
                 var mesh = scene.Meshes[index];
-                meshes.Add(ProcessMesh(mesh, transform));
+                meshes.Add(ProcessMesh(mesh, nodeTransform));
             }
             // 根节点处理完后 递归处理子节点
             foreach (var node in rootNode.Children)
             {
-                ProcessNode(scene, meshes, node, node.Transform);
+                ProcessNode(scene, meshes, node, nodeTransform);
             }
             
         }
+
         // 把assimp的mesh结构转换为我们自定义的mesh结构
         private static Mesh ProcessMesh(Assimp.Mesh mesh, Assimp.Matrix4x4 transform)
         {
@@ -124,10 +128,15 @@ namespace Underminer_Core.Rendering.Geometry
 
         public void Dispose()
         {
-            foreach (var mesh in Meshes)
+            if (!IsDestroy)
             {
-                mesh.Dispose();
+                foreach (var mesh in Meshes)
+                {
+                    mesh.Dispose();
+                }
             }
+
+            IsDestroy = true;
         }
     }
 }

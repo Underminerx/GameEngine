@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Underminer_Core.Rendering
+namespace Underminer_Core.Rendering.Resources
 {
     public class Texture2D : IDisposable
     {
@@ -18,12 +18,9 @@ namespace Underminer_Core.Rendering
         public TextureMagFilter TextureMagFilter { get; set; }
         public TextureMinFilter TextureMinFilter { get; set; }
         public bool IsMipmap { get; set; }
-        public Texture2D(string path, 
-            TextureWrapMode wrapModeS = TextureWrapMode.Repeat, 
-            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
-            TextureMagFilter magFilter = TextureMagFilter.Linear,
-            TextureMinFilter minFilter = TextureMinFilter.Nearest,
-            bool isMipmap = false)
+        public bool IsDestroy { get; private set; } = false;
+        private Texture2D(string path, TextureWrapMode wrapModeS, TextureWrapMode wrapModeT,
+                          TextureMagFilter magFilter, TextureMinFilter minFilter, bool isMipmap = false)
         {
             ImageResult? image = LoadTexture2DFromDisk(path);
             if (image != null)
@@ -61,22 +58,19 @@ namespace Underminer_Core.Rendering
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public Texture2D(Color4 color, TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
-            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
-            TextureMagFilter magFilter = TextureMagFilter.Linear,
-            TextureMinFilter minFilter = TextureMinFilter.Nearest)
+        private Texture2D(Color4 color)
         {
             Id = GL.GenTexture();
             GL.ActiveTexture(TextureUnit.Texture0);     // 激活0号纹理插槽
             GL.BindTexture(TextureTarget.Texture2D, Id);
-            WrapModeS = wrapModeS;
-            WrapModeT = wrapModeT;
-            TextureMagFilter = magFilter;
-            TextureMinFilter = minFilter;
-            int ws = (int)wrapModeS;
-            int wt = (int)wrapModeT;
-            int magF = (int)magFilter;
-            int minF = (int)minFilter;
+            WrapModeS = TextureWrapMode.Repeat;
+            WrapModeT = TextureWrapMode.Repeat;
+            TextureMagFilter = TextureMagFilter.Linear;
+            TextureMinFilter = TextureMinFilter.Nearest;
+            int ws = (int)WrapModeS;
+            int wt = (int)WrapModeT;
+            int magF = (int)TextureMagFilter;
+            int minF = (int)TextureMinFilter;
             GL.TextureParameterI(Id, TextureParameterName.TextureWrapS, ref ws);
             GL.TextureParameterI(Id, TextureParameterName.TextureWrapT, ref wt);
             GL.TextureParameterI(Id, TextureParameterName.TextureMagFilter, ref magF);
@@ -86,6 +80,16 @@ namespace Underminer_Core.Rendering
             GL.TexImage2D(TextureTarget.Texture2D, 0,PixelInternalFormat.CompressedRgbaS3tcDxt5Ext, 1, 1, 0,
                 PixelFormat.Rgba, PixelType.Float, new[]{ color.R, color.G, color.B, color.A });
         }
+
+
+        public static Texture2D Create(string path,
+            TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
+            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
+            TextureMagFilter magFilter = TextureMagFilter.Linear,
+            TextureMinFilter minFilter = TextureMinFilter.Nearest,
+            bool isMipmap = false) => new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter);
+
+        public static Texture2D Create(Color4 color) => new Texture2D(color);
 
         public void Bind(int solt = 0)
         {
@@ -121,8 +125,13 @@ namespace Underminer_Core.Rendering
 
         public void Dispose()
         {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
+            if (!IsDestroy)
+            {
+                ReleaseUnmanagedResources();
+                GC.SuppressFinalize(this);
+                IsDestroy = true;
+            }
+
         }
 
         ~Texture2D()

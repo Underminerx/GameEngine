@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Underminer_Core.Rendering
+namespace Underminer_Core.Rendering.Buffers
 {
     #region 模型数据布局
 
