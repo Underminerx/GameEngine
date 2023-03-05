@@ -11,6 +11,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
+using Underminer_Core.Log;
 using Underminer_Core.Rendering;
 using Underminer_Core.Rendering.Resources;
 using static System.Net.Mime.MediaTypeNames;

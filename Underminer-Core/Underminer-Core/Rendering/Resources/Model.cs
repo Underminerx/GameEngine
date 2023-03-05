@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Underminer_Core.Log;
 using Underminer_Core.Rendering.Geometry;
 
 namespace Underminer_Core.Rendering.Resources
@@ -15,7 +16,20 @@ namespace Underminer_Core.Rendering.Resources
         public List<string> MaterialNames { get; }      // 模型材质列表
         public bool IsDestroy { get; private set; } = false;
 
-        public static Model Create(string path) => new Model(path);
+        public static Model? Create(string path) 
+        { 
+            Model? model = null;
+            try
+            {
+                model = new Model(path);
+            }
+            catch (Exception e)
+            {
+                UmLog.ErrorLogCore(e.Message);
+            }
+
+            return model;
+        } 
         public static (List<Mesh> meshes, List<string> materialNames) LoadModel(string path, PostProcessSteps postProcessSteps = PostProcessSteps.None)
         {
             AssimpContext assimp = new AssimpContext();

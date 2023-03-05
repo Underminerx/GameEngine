@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.IO;
+using Underminer_Core.Log;
 using Vector2 = OpenTK.Mathematics.Vector2;
 using Vector3 = OpenTK.Mathematics.Vector3;
 using Vector4 = OpenTK.Mathematics.Vector4;
@@ -17,7 +18,22 @@ namespace Underminer_Core.Rendering.Resources
 
         public bool IsDestroy { get; private set; } = false;
 
-        public static Shader Create(string path) => new Shader(path);
+        public static Shader? Create(string path)
+        {
+            Shader? shader = null;
+
+            try
+            {
+                shader = new Shader(path);
+            }
+            catch (Exception e)
+            {
+                UmLog.ErrorLogCore(e.Message);
+            }
+
+            return shader;
+
+        }  
         public static Shader Create(string vertexShaderSource, string fragmentShaderSource) => 
             new Shader(vertexShaderSource, fragmentShaderSource);
 
@@ -192,7 +208,7 @@ namespace Underminer_Core.Rendering.Resources
             if (succeed == 0)
             {
                 GL.GetShaderInfoLog(Id, out string info);
-                Console.WriteLine(info);
+                UmLog.ErrorLogCore($"{info}");
             }
             // 绑定之后释放shader内存
             GL.DeleteShader(vertexShader);
@@ -220,7 +236,7 @@ namespace Underminer_Core.Rendering.Resources
             if (succeed == 0)
             {
                 GL.GetShaderInfoLog(id, out string info);
-                Console.WriteLine($"error:{type.ToString()} \n {info}");
+                UmLog.ErrorLogCore($"{type.ToString()}\t{info}");
             }
 
             return id;

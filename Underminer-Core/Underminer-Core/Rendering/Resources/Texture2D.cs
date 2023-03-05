@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Underminer_Core.Log;
 
 namespace Underminer_Core.Rendering.Resources
 {
@@ -82,13 +83,26 @@ namespace Underminer_Core.Rendering.Resources
         }
 
 
-        public static Texture2D Create(string path,
+        public static Texture2D? Create(string path,
             TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
             TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
             TextureMagFilter magFilter = TextureMagFilter.Linear,
             TextureMinFilter minFilter = TextureMinFilter.Nearest,
-            bool isMipmap = false) => new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter);
+            bool isMipmap = false)
+        {
+            Texture2D? texture2D = null;
+            try
+            {
+            
+                texture2D = new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter);
+            }
+            catch (Exception e)
+            {
+                UmLog.ErrorLogCore(e.Message);
+            }
 
+            return texture2D;
+        }
         public static Texture2D Create(Color4 color) => new Texture2D(color);
 
         public void Bind(int solt = 0)
@@ -104,17 +118,10 @@ namespace Underminer_Core.Rendering.Resources
 
         private ImageResult? LoadTexture2DFromDisk(string path)
         {
-            try
-            {
-                // 对图片进行上下反转  加载时从左上角加载 stb纹理映射时从左下角映射
-                StbImage.stbi_set_flip_vertically_on_load(1);
-                return ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
+            // 对图片进行上下反转  加载时从左上角加载 stb纹理映射时从左下角映射
+            StbImage.stbi_set_flip_vertically_on_load(1);
+            return ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
+
         }
 
         private void ReleaseUnmanagedResources()
