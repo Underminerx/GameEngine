@@ -11,6 +11,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using StbImageSharp;
+using Underminer_Core.ECS.Components;
 using Underminer_Core.Log;
 using Underminer_Core.Maths;
 using Underminer_Core.Rendering;
@@ -36,6 +37,8 @@ namespace Underminer_Sandbox
         // 窗口创建完成 第一次运行
         protected override void OnLoad()
         {
+            CTransform c1 = new CTransform(Guid.NewGuid());
+
             _myModel = Model.Create("""..\..\..\backpack\backpack.obj""");
             _texture01 = Texture2D.Create("""..\..\..\backpack\diffuse.jpg""");
             _shader = Shader.Create("""..\..\..\Shaders\Test.glsl""");
