@@ -87,8 +87,9 @@ namespace Underminer_Core.Rendering.Resources
                     maxZ = MathHelper.Max(maxZ, mesh.BoundingSphere.Position.Z + mesh.BoundingSphere.Radius);
                 }
                 Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
-                // 映射 把顶点集合里的值进行处理再保存
-                float radius = MathHelper.InverseSqrtFast(meshes.Select(m => Vector3.DistanceSquared(position, m.BoundingSphere.Position)).Max());
+                // 最远距离 为当前中心点与最远的点的距离
+                float radius = MathHelper.Max(Vector3.Distance(position, new Vector3(minX, minY, minZ)), 
+                                              Vector3.Distance(position, new Vector3(minX, minY, minZ)));
                 BoundingSphere = new Sphere
                 {
                     Position = position,

@@ -1,13 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTK.Mathematics;
+using Underminer_Core.Maths;
 
 namespace Underminer_Core.Rendering.Geometry
 {
     public struct Frustum
     {
+        public Plane NearPlane;
+        public Plane FarPlane;
+        public Plane LeftPlane;
+        public Plane RightPlane;
+        public Plane TopPlane;
+        public Plane BottomPlane;
+
+        public void CalculateFrustum(Camera camera,float aspect, Vector3 position, Quaternion rotation)
+        {
+            Vector3 front = rotation * Vector3.UnitZ;
+            Vector3 right = rotation * Vector3.UnitX;
+            Vector3 up = rotation * Vector3.UnitY;
+            float halfVSide = camera.Far * (float)MathHelper.Tan(MathHelper.DegreesToRadians(camera.Fov / 2));
+            float halfHSide = halfVSide * aspect;
+            Vector3 frontMultFar = camera.Far * front;
+
+            #region 视锥体六个面
+            NearPlane = new Plane
+            {
+                Position = position + camera.Near * front,
+                Normal = front,
+            };
+
+            FarPlane = new Plane
+            {
+                Position = position + camera.Far * front,
+                Normal = -front,
+            };
+
+            RightPlane = new Plane
+            {
+                Position = position,
+                Normal = Vector3.Cross(frontMultFar - right * halfHSide, up)
+            };
+
+            LeftPlane = new Plane
+            {
+                Position = position,
+                Normal = Vector3.Cross(up, frontMultFar + right * halfHSide)
+            };
+
+            TopPlane = new Plane
+            {
+                Position = position,
+                Normal = Vector3.Cross(right, up * halfVSide + frontMultFar)
+            };
+
+            BottomPlane = new Plane
+            {
+                Position = position,
+                Normal = Vector3.Cross(frontMultFar - up * halfVSide, right)
+            };
+
+            #endregion
+        }
+
+        public bool IsSphereInFrustum(Sphere sphere)
+        {
+            return NearPlane.  DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                   FarPlane.   DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                   BottomPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                   TopPlane.   DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                   LeftPlane.  DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                   RightPlane. DistanceToPlane(sphere.Position) >= -sphere.Radius;
+        }
+
+        public bool IsBoundingSphereInFrustum(Sphere sphere)
+        {
+            return false;
+        }
 
     }
 }
