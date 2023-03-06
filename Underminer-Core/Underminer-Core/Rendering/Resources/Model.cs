@@ -1,10 +1,12 @@
 ﻿using Assimp;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Underminer_Core.Log;
+using Underminer_Core.Maths;
 using Underminer_Core.Rendering.Geometry;
 
 namespace Underminer_Core.Rendering.Resources
@@ -15,6 +17,7 @@ namespace Underminer_Core.Rendering.Resources
         public List<Mesh> Meshes { get; }               // 模型网格列表
         public List<string> MaterialNames { get; }      // 模型材质列表
         public bool IsDestroy { get; private set; } = false;
+        public Sphere BoundingSphere { get; private set; }
 
         public static Model? Create(string path) 
         { 
@@ -51,6 +54,48 @@ namespace Underminer_Core.Rendering.Resources
         {
             Path = path;
             (Meshes, MaterialNames) = LoadModel(path);
+            CreateBoundingSphere(Meshes);
+        }
+
+        private void CreateBoundingSphere(List<Mesh> meshes)
+        {
+            if (meshes.Count == 1)
+            {
+                BoundingSphere = meshes[0].BoundingSphere;
+            }
+            else if (meshes.Count > 1)
+            {
+                // 最小与最大取中点
+                float minX = float.MaxValue;
+                float minY = float.MaxValue;
+                float minZ = float.MaxValue;
+
+                float maxX = float.MinValue;
+                float maxY = float.MinValue;
+                float maxZ = float.MinValue;
+
+                foreach (var mesh in meshes)
+                {
+                    // 找到最小的xyz值
+                    minX = MathHelper.Min(minX, mesh.BoundingSphere.Position.X - mesh.BoundingSphere.Radius);
+                    minY = MathHelper.Min(minY, mesh.BoundingSphere.Position.Y - mesh.BoundingSphere.Radius);
+                    minZ = MathHelper.Min(minZ, mesh.BoundingSphere.Position.Z - mesh.BoundingSphere.Radius);
+
+                    // 找到最大的xyz值
+                    maxX = MathHelper.Max(maxX, mesh.BoundingSphere.Position.X + mesh.BoundingSphere.Radius);
+                    maxY = MathHelper.Max(maxY, mesh.BoundingSphere.Position.Y + mesh.BoundingSphere.Radius);
+                    maxZ = MathHelper.Max(maxZ, mesh.BoundingSphere.Position.Z + mesh.BoundingSphere.Radius);
+                }
+                Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
+                // 映射 把顶点集合里的值进行处理再保存
+                float radius = MathHelper.InverseSqrtFast(meshes.Select(m => Vector3.DistanceSquared(position, m.BoundingSphere.Position)).Max());
+                BoundingSphere = new Sphere
+                {
+                    Position = position,
+                    Radius = radius
+                };
+            }
+
         }
         private static List<string> ProcessMaterials(Scene scene)
         {
