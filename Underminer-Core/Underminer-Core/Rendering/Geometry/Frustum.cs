@@ -22,42 +22,12 @@ namespace Underminer_Core.Rendering.Geometry
             Vector3 frontMultFar = camera.Far * front;
 
             #region 视锥体六个面
-            NearPlane = new Plane
-            {
-                Position = position + camera.Near * front,
-                Normal = front,
-            };
-
-            FarPlane = new Plane
-            {
-                Position = position + camera.Far * front,
-                Normal = -front,
-            };
-
-            RightPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(frontMultFar - right * halfHSide, up)
-            };
-
-            LeftPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(up, frontMultFar + right * halfHSide)
-            };
-
-            TopPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(right, up * halfVSide + frontMultFar)
-            };
-
-            BottomPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(frontMultFar - up * halfVSide, right)
-            };
-
+            NearPlane = new Plane(position + camera.Near * front, front);
+            FarPlane = new Plane(position + camera.Far * front, -front);
+            RightPlane = new Plane(position, Vector3.Cross(frontMultFar - right * halfHSide, up));
+            LeftPlane = new Plane(position, Vector3.Cross(up, frontMultFar + right * halfHSide));
+            TopPlane = new Plane(position, Vector3.Cross(right, up * halfVSide + frontMultFar));
+            BottomPlane = new Plane(position, Vector3.Cross(frontMultFar - up * halfVSide, right));
             #endregion
         }
 
@@ -76,9 +46,9 @@ namespace Underminer_Core.Rendering.Geometry
             // 获得使得最大的缩放轴 以得到最大的包围球
             float radius = MathHelper.Max(scale.X, MathHelper.Max(scale.Y, scale.Z)) * sphere.Radius;
             // 得到旋转后的中心点
-            Vector3 centerPos = rotation * sphere.Position;      
+            Vector3 centerPos = rotation * sphere.Position;
 
-            return IsSphereInFrustum(new Sphere() { Position = centerPos, Radius = radius});
+            return IsSphereInFrustum(new Sphere(centerPos, radius));
         }
 
     }

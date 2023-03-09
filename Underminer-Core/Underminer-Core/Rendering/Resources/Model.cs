@@ -90,11 +90,7 @@ namespace Underminer_Core.Rendering.Resources
                 // 最远距离 为当前中心点与最远的点的距离
                 float radius = MathHelper.Max(Vector3.Distance(position, new Vector3(minX, minY, minZ)), 
                                               Vector3.Distance(position, new Vector3(minX, minY, minZ)));
-                BoundingSphere = new Sphere
-                {
-                    Position = position,
-                    Radius = radius
-                };
+                BoundingSphere = new Sphere(position, radius);
             }
 
         }

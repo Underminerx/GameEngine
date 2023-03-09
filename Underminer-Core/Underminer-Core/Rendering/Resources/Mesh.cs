@@ -107,11 +107,7 @@ namespace Underminer_Core.Rendering.Resources
 
             // 映射 把vertices集合里的值进行处理再保存   取最大距离为半径
             float radius = MathHelper.InverseSqrtFast(vertices.Select(v => Vector3.DistanceSquared(position, v.Position)).Max());
-            BoundingSphere = new Sphere
-            {
-                Position = position,
-                Radius = radius
-            };
+            BoundingSphere = new Sphere(position, radius);
         }
 
         // 绘制时绑定Mesh 事实上就是绑定_vertexArrayObject
