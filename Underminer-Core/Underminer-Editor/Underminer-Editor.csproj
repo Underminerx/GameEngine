@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GeminiWpf" Version="1.0.60-beta" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Underminer-Core\Underminer-Core.csproj" />
   </ItemGroup>
 

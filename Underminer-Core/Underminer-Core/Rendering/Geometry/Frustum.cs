@@ -71,9 +71,14 @@ namespace Underminer_Core.Rendering.Geometry
                    RightPlane. DistanceToPlane(sphere.Position) >= -sphere.Radius;
         }
 
-        public bool IsBoundingSphereInFrustum(Sphere sphere)
+        public bool IsBoundingSphereInFrustum(Quaternion rotation, Vector3 scale, Sphere sphere)
         {
-            return false;
+            // 获得使得最大的缩放轴 以得到最大的包围球
+            float radius = MathHelper.Max(scale.X, MathHelper.Max(scale.Y, scale.Z)) * sphere.Radius;
+            // 得到旋转后的中心点
+            Vector3 centerPos = rotation * sphere.Position;      
+
+            return IsSphereInFrustum(new Sphere() { Position = centerPos, Radius = radius});
         }
 
     }

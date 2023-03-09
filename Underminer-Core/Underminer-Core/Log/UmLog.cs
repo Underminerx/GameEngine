@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Underminer_Core.Log
 {
-    public class UmLog
+    public static class UmLog
     {
         // trace -> debug -> info -> error -> fatal
 

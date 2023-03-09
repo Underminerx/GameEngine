@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Underminer_Core.ECS.Components
 {
-    public class CTransform : IComponent
+
+    [DataContract] public class CTransform : IComponent
     {
-        public Guid Id { get; }
+        public Guid Id => _id;
         public Vector3 LocationPosition
         {
             get => GetLocalPosition();
@@ -39,9 +41,17 @@ namespace Underminer_Core.ECS.Components
         public Vector3 WorldUp => WorldRotation * Vector3.UnitY;
         public Vector3 WorldRight => WorldRotation * Vector3.UnitX;
 
+        public Matrix4 LocalMatrix
+        {
+            get => GetLocalMatrix();
+            set => SetLocalMatrix(value);
+        }
+
+        public Matrix4 WorldMatrix => _worldMatrix;
+
         public CTransform(Guid id)
         {
-            Id = id;
+            _id = id;
 
             _localPosition = new Vector3();
             _localRotation = Quaternion.Identity;
@@ -52,9 +62,10 @@ namespace Underminer_Core.ECS.Components
             _isDirty = false;
         }
 
-        private Vector3 _localPosition;
-        private Quaternion _localRotation;
-        private Vector3 _localScale;
+        [DataMember] private Guid _id;
+        [DataMember] private Vector3 _localPosition;
+        [DataMember] private Quaternion _localRotation;
+        [DataMember] private Vector3 _localScale;
         private Matrix4 _parentMatrix;
         private Matrix4 _localMatrix;
         private Matrix4 _worldMatrix;
@@ -139,6 +150,7 @@ namespace Underminer_Core.ECS.Components
             _localPosition = _localMatrix.ExtractTranslation();
             _localRotation = _localMatrix.ExtractRotation();
             _localScale = _localMatrix.ExtractScale();
+            _isDirty = false;
         
         }
 
@@ -165,6 +177,28 @@ namespace Underminer_Core.ECS.Components
             _worldMatrix = _parentMatrix * _localMatrix;
 
             _isDirty = false;
+        }
+
+
+        [OnSerializing]
+        public void OnSerializing(StreamingContext _)
+        {
+            
+        }
+        [OnSerialized]
+        public void OnSerialized(StreamingContext _)
+        {
+
+        }
+        [OnDeserializing]
+        public void OnDeserializing(StreamingContext _)
+        {
+
+        }
+        [OnDeserialized]
+        public void OnDeserialized(StreamingContext _)
+        {
+            UpdateMatrices();
         }
     }
 }

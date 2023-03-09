@@ -1,0 +1,21 @@
+﻿<root type="object">
+  <_id>5cb5d0af-a17a-43dc-aece-b9ff9643a358</_id>
+  <_localPosition type="object">
+    <X type="number">1</X>
+    <Y type="number">1</Y>
+    <Z type="number">1</Z>
+  </_localPosition>
+  <_localRotation type="object">
+    <W type="number">1</W>
+    <Xyz type="object">
+      <X type="number">0</X>
+      <Y type="number">0</Y>
+      <Z type="number">0</Z>
+    </Xyz>
+  </_localRotation>
+  <_localScale type="object">
+    <X type="number">1</X>
+    <Y type="number">1</Y>
+    <Z type="number">1</Z>
+  </_localScale>
+</root>

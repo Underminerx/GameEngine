@@ -16,6 +16,7 @@ using Underminer_Core.Log;
 using Underminer_Core.Maths;
 using Underminer_Core.Rendering;
 using Underminer_Core.Rendering.Resources;
+using Underminer_Core.Tools;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -37,7 +38,13 @@ namespace Underminer_Sandbox
         // 窗口创建完成 第一次运行
         protected override void OnLoad()
         {
+            // 序列化
             CTransform c1 = new CTransform(Guid.NewGuid());
+            c1.LocationPosition += new Vector3(1, 1, 1);
+            SerializeHelper.Serialize(c1, """..\..\..\xml\test.xml""");
+
+            // 反序列化
+            SerializeHelper.DeSerialize("""..\..\..\xml\test.xml""", out CTransform? c2);
 
             _myModel = Model.Create("""..\..\..\backpack\backpack.obj""");
             _texture01 = Texture2D.Create("""..\..\..\backpack\diffuse.jpg""");
